@@ -1,87 +1,34 @@
-export const dynamic = "force-dynamic"
+// src/app/[countryCode]/(main)/categories/[...category]/page.tsx
+import { medusaClient } from '@lib/config';
+import { ProductCategory } from '@medusajs/client-types';
 
-import { Metadata } from "next"
-import { notFound } from "next/navigation"
+export default async function CategoryPage({
+  params,
+}: {
+  params: { countryCode: string; category: string[] };
+}) {
+  // Récupère les catégories côté serveur
+  const { category: categoryPath } = params;
+  const handle = categoryPath.join('/');
 
-import { getCategoryByHandle, listCategories } from "@lib/data/categories"
-import { listRegions } from "@lib/data/regions"
-import { StoreRegion } from "@medusajs/types"
-import CategoryTemplate from "@modules/categories/templates"
-import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
-
-type Props = {
-  params: Promise<{ category: string[]; countryCode: string }>
-  searchParams: Promise<{
-    sortBy?: SortOptions
-    page?: string
-  }>
-}
-
-export async function generateStaticParams() {
-  const product_categories = await listCategories()
-
-  if (!product_categories) {
-    return []
-  }
-
-  const countryCodes = await listRegions().then((regions: StoreRegion[]) =>
-    regions?.map((r) => r.countries?.map((c) => c.iso_2)).flat()
-  )
-
-  const categoryHandles = product_categories.map(
-    (category: any) => category.handle
-  )
-
-  const staticParams = countryCodes
-    ?.map((countryCode: string | undefined) =>
-      categoryHandles.map((handle: any) => ({
-        countryCode,
-        category: [handle],
-      }))
-    )
-    .flat()
-
-  return staticParams
-}
-
-export async function generateMetadata(props: Props): Promise<Metadata> {
-  const params = await props.params
   try {
-    const productCategory = await getCategoryByHandle(params.category)
+    const { data } = await medusaClient.categories.list({ handle });
+    const categories = data.categories || [];
 
-    const title = productCategory.name + " | Medusa Store"
-
-    const description = productCategory.description ?? `${title} category.`
-
-    return {
-      title: `${title} | Medusa Store`,
-      description,
-      alternates: {
-        canonical: `${params.category.join("/")}`,
-      },
-    }
+    return (
+      <div className="container mx-auto p-4">
+        <h1 className="text-2xl font-bold mb-6">Catégories</h1>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {categories.map((category) => (
+            <div key={category.id} className="border p-4 rounded-lg">
+              <h2 className="text-xl font-semibold">{category.name}</h2>
+              <p>{category.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   } catch (error) {
-    notFound()
+    return <div className="text-red-500 p-4">Erreur: Impossible de charger les catégories</div>;
   }
-}
-
-export default async function CategoryPage(props: Props) {
-  const searchParams = await props.searchParams
-  const params = await props.params
-  const { sortBy, page } = searchParams
-
-  const productCategory = await getCategoryByHandle(params.category)
-
-  if (!productCategory) {
-    notFound()
-  }
-
-  return (
-    <CategoryTemplate
-      category={productCategory}
-      sortBy={sortBy}
-      page={page}
-      countryCode={params.countryCode}
-    />
-  )
 }
