@@ -1,11 +1,12 @@
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import ChevronDown from "@modules/common/icons/chevron-down"
 import MedusaCTA from "@modules/layout/components/medusa-cta"
+ import type { ReactNode } from "react"
 
 export default function CheckoutLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: ReactNode
 }) {
   return (
     <div className="w-full bg-white relative small:min-h-screen">
@@ -29,7 +30,7 @@ export default function CheckoutLayout({
             className="txt-compact-xlarge-plus text-ui-fg-subtle hover:text-ui-fg-base uppercase"
             data-testid="store-link"
           >
-            Medusa Store
+            MBWood
           </LocalizedClientLink>
           <div className="flex-1 basis-0" />
         </nav>
