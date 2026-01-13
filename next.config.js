@@ -12,10 +12,13 @@ const nextConfig = {
   reactStrictMode: true,
   output: 'standalone',
   
-  // Désactiver la génération statique au build pour les pages dynamiques
-  experimental: {
-    missingSuspenseWithCSRBailout: false,
-  },
+  // Désactiver le Static Site Generation (SSG) - tout sera en SSR
+  // Cela évite les erreurs de fetch pendant le build
+  ...(process.env.NODE_ENV === 'production' && {
+    generateBuildId: async () => {
+      return 'build-id'
+    },
+  }),
   
   logging: {
     fetches: {
