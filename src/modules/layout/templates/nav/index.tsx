@@ -1,4 +1,5 @@
 import { Suspense } from "react"
+import Image from "next/image"
 
 import { listRegions } from "@lib/data/regions"
 import { listLocales } from "@lib/data/locales"
@@ -8,7 +9,7 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
 import CartButton from "@modules/layout/components/cart-button"
 import SideMenu from "@modules/layout/components/side-menu"
 
-export default async function Nav() {
+export default async function MBWoodNav() {
   const [regions, locales, currentLocale] = await Promise.all([
     listRegions().then((regions: StoreRegion[]) => regions),
     listLocales(),
@@ -28,10 +29,18 @@ export default async function Nav() {
           <div className="flex items-center h-full">
             <LocalizedClientLink
               href="/"
-              className="txt-compact-xlarge-plus hover:text-ui-fg-base uppercase"
+              className="flex items-center gap-x-2 hover:text-ui-fg-base"
               data-testid="nav-store-link"
             >
-              Medusa Store
+              <Image
+                src="/logo.jpg"
+                alt="MBWood"
+                width={120}
+                height={40}
+                className="h-8 w-auto"
+                priority
+              />
+              <span className="sr-only">MBWood</span>
             </LocalizedClientLink>
           </div>
 
