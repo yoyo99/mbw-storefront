@@ -2,9 +2,6 @@ const checkEnvVariables = require("./check-env-variables")
 
 checkEnvVariables()
 
-/**
- * Medusa Cloud-related environment variables
- */
 const S3_HOSTNAME = process.env.MEDUSA_CLOUD_S3_HOSTNAME
 const S3_PATHNAME = process.env.MEDUSA_CLOUD_S3_PATHNAME
 
@@ -13,7 +10,13 @@ const S3_PATHNAME = process.env.MEDUSA_CLOUD_S3_PATHNAME
  */
 const nextConfig = {
   reactStrictMode: true,
-  output: 'standalone', // ← IMPORTANT : Active le mode standalone pour Docker
+  output: 'standalone',
+  
+  // Désactiver la génération statique au build pour les pages dynamiques
+  experimental: {
+    missingSuspenseWithCSRBailout: false,
+  },
+  
   logging: {
     fetches: {
       fullUrl: true,
